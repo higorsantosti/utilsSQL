@@ -1,0 +1,96 @@
+
+--- corrigi endereco - cliente endereco ecommerce
+-- 
+
+begin
+  for x in (select * from clientes a where a.cnpj_cpf = 48511374604) loop
+    update clientes_endereco p
+       set p.cliente = x.id
+     where TO_NUMBER(usr_f_piece(DESCRITIVO, '-', 2)) = x.id
+       and p.DESCRITIVO LIKE '%Endereço Ecommerce%';
+  end loop;
+end;
+
+--------------------------------
+
+select * from  clientes_endereco p
+where TO_NUMBER(usr_f_piece(DESCRITIVO, '-', 2)) = 142132
+       and p.DESCRITIVO LIKE '%Endereço Ecommerce%';
+
+---------------------------
+
+
+--- loop de update pra atualizar tabela1 com o pre�o da tabela2(que esta zerado)
+ 
+begin 
+    for x in (
+select i.produto, i.programado_atual
+from alteracao_precos p, import_higor i
+where p.produto = i.produto
+group by i.produto, i.programado_atual)
+ 
+loop
+update alteracao_precos p set p.programado_atual = x.programado_atual
+where p.produto = x.produto;
+end loop;
+end;
+
+---------------------------
+
+------- ATUALIZA CATEGORIA, DEPTO, SECAO, 
+
+begin 
+   for x in (
+select y.id_sku, y.depto_para, y.cat_para, secao_para from eco_t_produtos s, lx_pl_produtos_eco y
+where y.id_sku = s.id_produto
+group by y.id_sku, y.depto_para, y.cat_para, secao_para)
+ 
+loop
+update eco_t_produtos s 
+       set 
+       s.id_departamento = x.depto_para,
+       s.id_categoria = x.cat_para,
+       s.id_secao = x.secao_para
+where s.id_produto = x.id_sku;
+end loop;
+end;
+--------------------
+
+select y.id_sku, 
+       y.depto_para, 
+       s.id_departamento, 
+       y.cat_para, 
+       s.id_categoria, 
+       secao_para, 
+       s.id_secao from lx_eco_t_produtos s, lx_pl_produtos_eco y
+where y.id_sku = s.id_produto
+group by y.id_sku, y.depto_para, s.id_departamento, y.cat_para, s.id_categoria, secao_para, s.id_secao
+-------------------------
+
+
+
+
+
+
+---verifica se produto nao exist na tabela2
+select ss.produto, ss.programado_atual from alteracao_precos ss
+where not exists 
+(select * from import_higor r where r.produto = ss.produto)
+and ss.programado_atual <>0
+group by ss.produto, ss.programado_atual
+
+
+select * from import_higor rr
+where rr.produto = 11400609
+
+select * from alteracao_precos pp
+where pp.produto in (842290,
+964476)
+
+
+--  tbl bkp
+create table eco_t_produtos_bkp_13_02_2023 as select * from eco_t_produtos;
+-- tbl importado
+select * from import_higor r
+
+update import_higor r set r.programado_atual = 0;
