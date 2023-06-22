@@ -1,0 +1,30 @@
+  begin 
+    for x in (
+      select tp.id_produto, tp.comprimento
+     from eco_t_produtos tp, produtos s
+      where  tp.id_produto = s.id and tp.comprimento is not null
+       group by tp.id_produto, tp.comprimento)
+   loop
+   update produtos p 
+    set p.profundidade = x.comprimento
+     where p.id = x.id_produto;
+    -- and p.profundidade is null;
+      --and p.id_produto = 2747;
+   end loop;
+end;
+
+select * from produtos_ean a
+where a.produto = 1994
+
+create table produtos_bkp_13_10_2022 as select * from produtos;
+
+select bkp.id_produto,
+bkp.altura,
+bkp.largura,
+bkp.comprimento
+ from eco_t_produtos bkp
+where bkp.id_produto = 2544;
+
+  select s.id, s.altura, s.largura, s.profundidade
+     from produtos s
+     where s.id = 2544;
