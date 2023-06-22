@@ -1,0 +1,22 @@
+---verifica se produto nao exist na tabela2
+select ss.produto, ss.programado_atual from alteracao_precos ss
+where not exists 
+(select * from import_higor r where r.produto = ss.produto)
+and ss.programado_atual <>0
+group by ss.produto, ss.programado_atual
+
+
+select * from import_higor rr
+where rr.produto = 11400609
+
+select * from alteracao_precos pp
+where pp.produto in (842290,
+964476)
+
+
+--  tbl bkp
+create table eco_t_produtos_bkp_13_02_2023 as select * from eco_t_produtos;
+-- tbl importado
+select * from import_higor r
+
+update import_higor r set r.programado_atual = 0;
